@@ -1,36 +1,51 @@
-import java.io.BufferedReader;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
+import java.io.*;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws FileNotFoundException, IOException{
+
+    private static final String fileName = "src/google-10000-english.txt";
+    public static final String YELLOW_COLOR = "\u001B[33m";
+    public static void main(String[] args) throws IOException{
         System.out.print("Enter phrase: ");
         Scanner scanner = new Scanner(System.in);
         String phrase = scanner.nextLine();
         phrase = phrase.toLowerCase();
 
-        String fileName = "src/google-10000-english.txt";
-
-        BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
-
         Main main = new Main();
 
+        LinkedList<String> returnWord;
 
-        LinkedList<String> returnWord = main.returnWords(bufferedReader, phrase);
+
+
+        try {
+            BufferedReader bufferedReader = new BufferedReader(new FileReader(fileName));
+            try {
+                returnWord = main.returnWords(bufferedReader, phrase);
+                if(returnWord.isEmpty()) {
+                    System.out.println(YELLOW_COLOR + "Error! The words from file: " + System.clearProperty("user.dir") + "\\" + fileName + "were not found");
+                    System.exit(0);
+                }
+            } finally {
+                bufferedReader.close();
+            }
+        } catch (IOException ex) {
+            System.out.println(YELLOW_COLOR +  "Error! reading from file: " + System.clearProperty("user.dir") + "\\" + fileName);
+            System.exit(0);
+            throw ex;
+        }
+
+        System.out.println("We can: ");
 
         for (int i = 0; i < returnWord.size(); i++) {
             System.out.println(returnWord.get(i));
         }
 
         scanner.close();
-        bufferedReader.close();
     }
 
-    private HashMap<Character, Integer> getLetter(String phrase) throws IOException {
+    private HashMap<Character, Integer> getLetter(String phrase){
         HashMap<Character, Integer> hashMap= new HashMap<>();
 
         for (int i = 0; i < phrase.length(); i++) {
@@ -52,7 +67,6 @@ public class Main {
 
         String allWords;
 
-        System.out.println("We can: ");
         HashMap<Character, Integer> getPhrase = main.getLetter(phrase);
         boolean isTrue;
         int num = 0;
@@ -73,6 +87,7 @@ public class Main {
                 wordsList.add(num + ". " + allWords);
             }
         }
+
         return wordsList;
     }
 }
